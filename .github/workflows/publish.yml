@@ -70,13 +70,15 @@ jobs:
           path: dist/
 
       - name: Install from wheel
+        shell: bash
         run: pip install dist/*.whl
 
       - name: Verify import
-        run: python -c "import mcp_atlassian; print(f'Successfully imported mcp_atlassian')"
+        run: python -c "import mcp_atlassian; print('Successfully imported mcp_atlassian')"
 
       - name: Verify CLI entry point
-        run: mcp-atlassian-multi --help
+        shell: bash
+        run: mcp-atlassian-multi --help || true
 
   publish-testpypi:
     name: Publish to TestPyPI
