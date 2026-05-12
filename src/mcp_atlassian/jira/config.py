@@ -208,7 +208,15 @@ class JiraConfig:
                     "Set JIRA_USERNAME and JIRA_API_TOKEN, or enable OAuth with "
                     "ATLASSIAN_OAUTH_ENABLE=true."
                 )
-                raise ValueError(error_msg)
+                # Multi-user mode: skip auth validation
+                if os.getenv("MCP_MULTI_USER", "").lower() in ("true", "1", "yes"):
+                    logger = logging.getLogger("mcp-atlassian.jira.config")
+                    logger.info("Multi-user mode: skipping Cloud auth validation")
+                    auth_type = "basic"
+                    username = username or "multi-user-placeholder"
+                    api_token = api_token or "per-request-via-meta"
+                else:
+                    raise ValueError(error_msg)
         else:  # Server/Data Center
             # Server/DC: PAT takes priority over OAuth (fixes #824)
             if personal_token:
