@@ -1,110 +1,87 @@
-# MCP Atlassian
+# mcp-atlassian-multi
 
-![PyPI Version](https://img.shields.io/pypi/v/mcp-atlassian)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/mcp-atlassian)
-![PePy - Total Downloads](https://static.pepy.tech/personalized-badge/mcp-atlassian?period=total&units=international_system&left_color=grey&right_color=blue&left_text=Total%20Downloads)
-[![Run Tests](https://github.com/sooperset/mcp-atlassian/actions/workflows/tests.yml/badge.svg)](https://github.com/sooperset/mcp-atlassian/actions/workflows/tests.yml)
-![License](https://img.shields.io/github/license/sooperset/mcp-atlassian)
-[![Docs](https://img.shields.io/badge/docs-mintlify-blue)](https://mcp-atlassian.soomiles.com)
+Multi-user credential support for Atlassian MCP Server (Jira + Confluence).
 
-Model Context Protocol (MCP) server for Atlassian products (Confluence and Jira). Supports both Cloud and Server/Data Center deployments.
+Forked from [sooperset/mcp-atlassian](https://github.com/sooperset/mcp-atlassian) with added support for per-request credential injection, enabling a single MCP server process to serve multiple users with different credentials.
 
-https://github.com/user-attachments/assets/35303504-14c6-4ae4-913b-7c25ea511c3e
+## Key Difference from Original
 
-<details>
-<summary>Confluence Demo</summary>
+| Feature | mcp-atlassian (original) | mcp-atlassian-multi (this fork) |
+|---------|--------------------------|----------------------------------|
+| Credential source | ENV vars / CLI args at startup | Per-request via `_meta` field |
+| Process model | 1 process per user | 1 process for ALL users |
+| Use case | Single-user (IDE, CLI) | Multi-user orchestrator server |
 
-https://github.com/user-attachments/assets/7fe9c488-ad0c-4876-9b54-120b666bb785
+## How It Works
 
-</details>
+The original `mcp-atlassian` reads credentials from environment variables or CLI arguments when the process starts. This means each user needs a separate process.
 
-## Quick Start
+`mcp-atlassian-multi` adds a **credential resolution layer** that:
+1. Checks `_meta` in each tool call for per-request credentials
+2. Falls back to ENV/CLI credentials if `_meta` is not provided (backward compatible)
+3. Creates HTTP clients per credential set (pooled by credential hash)
 
-### 1. Get Your API Token
+## Installation
 
-Go to https://id.atlassian.com/manage-profile/security/api-tokens and create a token.
+```bash
+pip install mcp-atlassian-multi
+uvx mcp-atlassian-multi
+```
 
-> For Server/Data Center, use a Personal Access Token instead. See [Authentication](https://mcp-atlassian.soomiles.com/docs/authentication).
+## Usage
 
-### 2. Configure Your IDE
+### Mode 1: Original (backward compatible)
 
-Add to your Claude Desktop or Cursor MCP configuration:
+```bash
+mcp-atlassian-multi --jira-url=https://company.atlassian.net --jira-token=YOUR_TOKEN
+```
 
+### Mode 2: Multi-user (orchestrator integration)
+
+Start without credentials:
+```bash
+mcp-atlassian-multi --multi-user
+```
+
+Orchestrator sends credentials per tool call via `_meta`:
 ```json
 {
-  "mcpServers": {
-    "mcp-atlassian": {
-      "command": "uvx",
-      "args": ["mcp-atlassian"],
-      "env": {
-        "JIRA_URL": "https://your-company.atlassian.net",
-        "JIRA_USERNAME": "your.email@company.com",
-        "JIRA_API_TOKEN": "your_api_token",
-        "CONFLUENCE_URL": "https://your-company.atlassian.net/wiki",
-        "CONFLUENCE_USERNAME": "your.email@company.com",
-        "CONFLUENCE_API_TOKEN": "your_api_token"
+  "method": "tools/call",
+  "params": {
+    "name": "jira_search",
+    "arguments": {"jql": "project = PROJ"},
+    "_meta": {
+      "credentials": {
+        "jira_url": "https://company.atlassian.net",
+        "jira_username": "user@company.com",
+        "jira_token": "USER_SPECIFIC_TOKEN"
       }
     }
   }
 }
 ```
 
-> **Server/Data Center users**: Use `JIRA_PERSONAL_TOKEN` instead of `JIRA_USERNAME` + `JIRA_API_TOKEN`. See [Authentication](https://mcp-atlassian.soomiles.com/docs/authentication) for details.
+## Development
 
-### 3. Start Using
+```bash
+git clone https://github.com/dnguyenminh/mcp-atlassian-multi.git
+cd mcp-atlassian-multi
+uv sync
+uv run pytest
+uv run ruff check src/
+uv run mcp-atlassian-multi --multi-user
+```
 
-Ask your AI assistant to:
-- **"Find issues assigned to me in PROJ project"**
-- **"Search Confluence for onboarding docs"**
-- **"Create a bug ticket for the login issue"**
-- **"Update the status of PROJ-123 to Done"**
+## Syncing with Upstream
 
-## Documentation
-
-Full documentation is available at **[mcp-atlassian.soomiles.com](https://mcp-atlassian.soomiles.com)**.
-
-Documentation is also available in [llms.txt format](https://llmstxt.org/), which LLMs can consume easily:
-- [`llms.txt`](https://mcp-atlassian.soomiles.com/llms.txt) — documentation sitemap
-- [`llms-full.txt`](https://mcp-atlassian.soomiles.com/llms-full.txt) — complete documentation
-
-| Topic | Description |
-|-------|-------------|
-| [Installation](https://mcp-atlassian.soomiles.com/docs/installation) | uvx, Docker, pip, from source |
-| [Authentication](https://mcp-atlassian.soomiles.com/docs/authentication) | API tokens, PAT, OAuth 2.0 |
-| [Configuration](https://mcp-atlassian.soomiles.com/docs/configuration) | IDE setup, environment variables |
-| [HTTP Transport](https://mcp-atlassian.soomiles.com/docs/http-transport) | SSE, streamable-http, multi-user |
-| [Tools Reference](https://mcp-atlassian.soomiles.com/docs/tools-reference) | All Jira & Confluence tools |
-| [Troubleshooting](https://mcp-atlassian.soomiles.com/docs/troubleshooting) | Common issues & debugging |
-
-## Compatibility
-
-| Product | Deployment | Support |
-|---------|------------|---------|
-| Confluence | Cloud | Fully supported |
-| Confluence | Server/Data Center | Supported (v6.0+) |
-| Jira | Cloud | Fully supported |
-| Jira | Server/Data Center | Supported (v8.14+) |
-
-## Key Tools
-
-| Jira | Confluence |
-|------|------------|
-| `jira_search` - Search with JQL | `confluence_search` - Search with CQL |
-| `jira_get_issue` - Get issue details | `confluence_get_page` - Get page content |
-| `jira_create_issue` - Create issues | `confluence_create_page` - Create pages |
-| `jira_update_issue` - Update issues | `confluence_update_page` - Update pages |
-| `jira_transition_issue` - Change status | `confluence_add_comment` - Add comments |
-
-**72 tools total** — See [Tools Reference](https://mcp-atlassian.soomiles.com/docs/tools-reference) for the complete list.
-
-## Security
-
-Never share API tokens. Keep `.env` files secure. See [SECURITY.md](SECURITY.md).
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup.
+```bash
+git fetch upstream
+git checkout main
+git merge upstream/main
+git checkout feature/multi-user-credentials
+git rebase main
+```
 
 ## License
 
-MIT - See [LICENSE](LICENSE). Not an official Atlassian product.
+MIT License. Original work: Copyright (c) sooperset. Modified work: Copyright (c) dnguyenminh.

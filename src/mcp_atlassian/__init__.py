@@ -195,6 +195,11 @@ async def _run_stdio_with_stdin_guard(run_kwargs: dict[str, object]) -> None:
     help="Comma-separated list of Jira project keys to filter search results",
 )
 @click.option(
+    "--multi-user",
+    is_flag=True,
+    help="Run in multi-user mode (credentials provided per-request via _meta)",
+)
+@click.option(
     "--read-only",
     is_flag=True,
     help="Run in read-only mode (disables all write operations)",
@@ -253,6 +258,7 @@ def main(
     jira_personal_token: str | None,
     jira_ssl_verify: bool,
     jira_projects_filter: str | None,
+    multi_user: bool,
     read_only: bool,
     enabled_tools: str | None,
     toolsets: str | None,
