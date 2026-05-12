@@ -43,9 +43,9 @@ GitHub Copilot's coding agent supports MCP servers via stdio transport. Key conf
     ```json
     {
       "mcpServers": {
-        "mcp-atlassian": {
+        "mcp-atlassian-multi": {
           "command": "uvx",
-          "args": ["mcp-atlassian"],
+          "args": ["mcp-atlassian-multi"],
           "env": {
             "JIRA_URL": "https://your-instance.atlassian.net",
             "JIRA_USERNAME": "your-email@example.com",
@@ -58,7 +58,7 @@ GitHub Copilot's coding agent supports MCP servers via stdio transport. Key conf
   </Step>
 
   <Step title="Verify tool discovery">
-    If Copilot reports "Retrieved 0 tools", ensure you are using `mcp-atlassian >= 0.16.0` (which includes FastMCP updates for better protocol compliance).
+    If Copilot reports "Retrieved 0 tools", ensure you are using `mcp-atlassian-multi >= 0.16.0` (which includes FastMCP updates for better protocol compliance).
   </Step>
 
   <Step title="Docker alternative">
@@ -67,14 +67,14 @@ GitHub Copilot's coding agent supports MCP servers via stdio transport. Key conf
     ```json
     {
       "mcpServers": {
-        "mcp-atlassian": {
+        "mcp-atlassian-multi": {
           "command": "docker",
           "args": [
             "run", "-i", "--rm",
             "-e", "JIRA_URL=https://your-instance.atlassian.net",
             "-e", "JIRA_USERNAME=your-email@example.com",
             "-e", "JIRA_API_TOKEN=your-api-token",
-            "ghcr.io/sooperset/mcp-atlassian:latest"
+            "ghcr.io/sooperset/mcp-atlassian-multi:latest"
           ]
         }
       }
@@ -90,12 +90,12 @@ Vertex AI enforces strict JSON Schema validation. The automatic `anyOf` flatteni
 If you encounter schema errors, ensure you are running the latest version:
 
 ```bash
-uvx mcp-atlassian@latest
+uvx mcp-atlassian-multi@latest
 ```
 
 ### ChatGPT
 
-ChatGPT's MCP integration has reported vague "violates guidelines" errors. This may be related to schema validation but no specific diagnostics are available. If you encounter this, please [open an issue](https://github.com/sooperset/mcp-atlassian/issues) with the exact error message.
+ChatGPT's MCP integration has reported vague "violates guidelines" errors. This may be related to schema validation but no specific diagnostics are available. If you encounter this, please [open an issue](https://github.com/sooperset/mcp-atlassian-multi/issues) with the exact error message.
 
 ## HTTP Transport
 

@@ -23,7 +23,7 @@ import requests
 from .urls import is_atlassian_cloud_url
 
 # Configure logging
-logger = logging.getLogger("mcp-atlassian.oauth")
+logger = logging.getLogger("mcp-atlassian-multi.oauth")
 
 # Cloud OAuth endpoints
 CLOUD_TOKEN_URL = "https://auth.atlassian.com/oauth/token"  # noqa: S105 - This is a public API endpoint URL, not a password
@@ -46,7 +46,7 @@ TOKEN_EXPIRY_MARGIN = 300  # 5 minutes in seconds
 HTTP_CONNECT_TIMEOUT = 5
 HTTP_READ_TIMEOUT = 20
 HTTP_TIMEOUT = (HTTP_CONNECT_TIMEOUT, HTTP_READ_TIMEOUT)
-KEYRING_SERVICE_NAME = "mcp-atlassian-oauth"
+KEYRING_SERVICE_NAME = "mcp-atlassian-multi-oauth"
 
 
 @dataclass
@@ -399,7 +399,7 @@ class OAuthConfig:
         """
         try:
             # Create the directory if it doesn't exist
-            token_dir = Path.home() / ".mcp-atlassian"
+            token_dir = Path.home() / ".mcp-atlassian-multi"
             token_dir.mkdir(exist_ok=True)
 
             # Save the tokens to a file
@@ -457,7 +457,7 @@ class OAuthConfig:
         Returns:
             Dict with the token data or empty dict if no tokens found
         """
-        token_path = Path.home() / ".mcp-atlassian" / f"oauth-{client_id}.json"
+        token_path = Path.home() / ".mcp-atlassian-multi" / f"oauth-{client_id}.json"
 
         if not token_path.exists():
             return {}

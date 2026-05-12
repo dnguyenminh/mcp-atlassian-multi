@@ -21,9 +21,9 @@ This guide covers IDE integration, environment variables, and advanced configura
 ```json
 {
   "mcpServers": {
-    "mcp-atlassian": {
+    "mcp-atlassian-multi": {
       "command": "uvx",
-      "args": ["mcp-atlassian"],
+      "args": ["mcp-atlassian-multi"],
       "env": {
         "JIRA_URL": "https://your-company.atlassian.net",
         "JIRA_USERNAME": "your.email@company.com",
@@ -39,12 +39,12 @@ This guide covers IDE integration, environment variables, and advanced configura
 ```json
 {
   "mcpServers": {
-    "mcp-atlassian": {
+    "mcp-atlassian-multi": {
       "command": "docker",
       "args": [
         "run", "--rm", "-i",
-        "--env-file", "/path/to/your/mcp-atlassian.env",
-        "ghcr.io/sooperset/mcp-atlassian:latest"
+        "--env-file", "/path/to/your/mcp-atlassian-multi.env",
+        "ghcr.io/sooperset/mcp-atlassian-multi:latest"
       ]
     }
   }
@@ -56,9 +56,9 @@ This guide covers IDE integration, environment variables, and advanced configura
 ```json
 {
   "mcpServers": {
-    "mcp-atlassian": {
+    "mcp-atlassian-multi": {
       "command": "uvx",
-      "args": ["mcp-atlassian"],
+      "args": ["mcp-atlassian-multi"],
       "env": {
         "JIRA_URL": "https://jira.your-company.com",
         "JIRA_PERSONAL_TOKEN": "your_pat",
@@ -79,9 +79,9 @@ This guide covers IDE integration, environment variables, and advanced configura
     ```json
     {
       "mcpServers": {
-        "mcp-atlassian": {
+        "mcp-atlassian-multi": {
           "command": "uvx",
-          "args": ["mcp-atlassian"],
+          "args": ["mcp-atlassian-multi"],
           "env": {
             "CONFLUENCE_URL": "https://your-company.atlassian.net/wiki",
             "CONFLUENCE_USERNAME": "your.email@company.com",
@@ -96,9 +96,9 @@ This guide covers IDE integration, environment variables, and advanced configura
     ```json
     {
       "mcpServers": {
-        "mcp-atlassian": {
+        "mcp-atlassian-multi": {
           "command": "uvx",
-          "args": ["mcp-atlassian"],
+          "args": ["mcp-atlassian-multi"],
           "env": {
             "JIRA_URL": "https://your-company.atlassian.net",
             "JIRA_USERNAME": "your.email@company.com",
@@ -157,7 +157,7 @@ This guide covers IDE integration, environment variables, and advanced configura
 | `ATLASSIAN_OAUTH_REQUIRE_CONSENT` | Require local consent page before upstream redirect (`true`/`false`) |
 | `IGNORE_HEADER_AUTH` | Bypass proxy-injected auth headers. For GCP Cloud Run, AWS ALB deployments where load balancers inject Authorization headers (`true`/`false`) |
 
-See [.env.example](https://github.com/sooperset/mcp-atlassian/blob/main/.env.example) for all available options.
+See [.env.example](https://github.com/sooperset/mcp-atlassian-multi/blob/main/.env.example) for all available options.
 
 ## Proxy Configuration
 
@@ -208,7 +208,7 @@ READ_ONLY_MODE=true
 
 Command-line alternative:
 ```bash
-uvx mcp-atlassian --enabled-tools "confluence_search,jira_get_issue"
+uvx mcp-atlassian-multi --enabled-tools "confluence_search,jira_get_issue"
 ```
 
 ### Toolset Filtering
@@ -229,7 +229,7 @@ TOOLSETS=all
 
 Command-line alternative:
 ```bash
-uvx mcp-atlassian --toolsets "default,jira_agile"
+uvx mcp-atlassian-multi --toolsets "default,jira_agile"
 ```
 
 **Core toolsets** (included with `TOOLSETS=default`):

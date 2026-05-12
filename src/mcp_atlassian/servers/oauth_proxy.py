@@ -8,7 +8,7 @@ from collections.abc import Iterable
 from fastmcp.server.auth.oauth_proxy import OAuthProxy
 from mcp.server.auth.provider import OAuthClientInformationFull
 
-logger = logging.getLogger("mcp-atlassian.server.oauth_proxy")
+logger = logging.getLogger("mcp-atlassian-multi.server.oauth_proxy")
 
 
 def _normalize_list(values: Iterable[str] | None) -> list[str] | None:

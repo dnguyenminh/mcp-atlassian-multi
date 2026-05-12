@@ -18,7 +18,7 @@ description: "Fix auth errors (401/403), field issues, rate limiting, SSL proble
   </Accordion>
 
   <Accordion title="SSL Certificate Issues">
-    mcp-atlassian uses the OS native trust store by default (via
+    mcp-atlassian-multi uses the OS native trust store by default (via
     [truststore](https://truststore.readthedocs.io/)), so certificates
     signed by enterprise CAs installed in Windows Certificate Store,
     macOS Keychain, or the Linux system CA bundle are trusted
@@ -82,10 +82,10 @@ Test your configuration interactively:
 
 ```bash
 # With uvx
-npx @modelcontextprotocol/inspector uvx mcp-atlassian
+npx @modelcontextprotocol/inspector uvx mcp-atlassian-multi
 
 # With local development version
-npx @modelcontextprotocol/inspector uv --directory /path/to/mcp-atlassian run mcp-atlassian
+npx @modelcontextprotocol/inspector uv --directory /path/to/mcp-atlassian-multi run mcp-atlassian-multi
 ```
 
 ## Debugging Custom Headers
@@ -170,7 +170,7 @@ Header values containing sensitive information are automatically masked in logs.
     **Cause:** OAuth access token has expired and refresh failed.
 
     **Fix:**
-    1. Re-run the OAuth setup: `mcp-atlassian --oauth-setup`
+    1. Re-run the OAuth setup: `mcp-atlassian-multi --oauth-setup`
     2. Ensure your app has `offline_access` scope for refresh tokens
     3. Check if the OAuth app is still active in your Atlassian developer console
   </Accordion>
@@ -265,6 +265,6 @@ Header values containing sensitive information are automatically masked in logs.
 
 ## Getting Help
 
-- Check [GitHub Issues](https://github.com/sooperset/mcp-atlassian/issues) for known problems
-- Review [SECURITY.md](https://github.com/sooperset/mcp-atlassian/blob/main/SECURITY.md) for security-related concerns
+- Check [GitHub Issues](https://github.com/sooperset/mcp-atlassian-multi/issues) for known problems
+- Review [SECURITY.md](https://github.com/sooperset/mcp-atlassian-multi/blob/main/SECURITY.md) for security-related concerns
 - Open a new issue with debug logs if the problem persists

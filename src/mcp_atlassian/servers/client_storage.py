@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 else:
     AsyncKeyValue = Any
 
-logger = logging.getLogger("mcp-atlassian.server.client_storage")
+logger = logging.getLogger("mcp-atlassian-multi.server.client_storage")
 
 CLIENT_STORAGE_MODE_ENV = "ATLASSIAN_OAUTH_CLIENT_STORAGE_MODE"
 CLIENT_STORAGE_FACTORY_ENV = "ATLASSIAN_OAUTH_CLIENT_STORAGE_FACTORY"

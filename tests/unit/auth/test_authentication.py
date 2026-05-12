@@ -395,7 +395,7 @@ class TestTokenExpirationAndRetry:
             for call_args in mock_set.call_args_list:
                 service_name, username, token_json = call_args[0]
                 if (
-                    service_name == "mcp-atlassian-oauth"
+                    service_name == "mcp-atlassian-multi-oauth"
                     and username == f"oauth-{client_id}"
                 ):
                     found_expected_call = True

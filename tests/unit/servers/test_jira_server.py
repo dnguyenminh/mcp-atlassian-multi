@@ -1457,7 +1457,7 @@ async def test_batch_create_versions_empty(jira_client, mock_jira_fetcher):
 
 
 # Regression tests for issue #883: project keys with 4+ characters
-# https://github.com/sooperset/mcp-atlassian/issues/883
+# https://github.com/sooperset/mcp-atlassian-multi/issues/883
 
 
 @pytest.mark.anyio

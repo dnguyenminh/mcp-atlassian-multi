@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     )
     from mcp_atlassian.jira.config import JiraConfig as UserJiraConfigType
 
-logger = logging.getLogger("mcp-atlassian.servers.dependencies")
+logger = logging.getLogger("mcp-atlassian-multi.servers.dependencies")
 
 
 # ---------------------------------------------------------------------------

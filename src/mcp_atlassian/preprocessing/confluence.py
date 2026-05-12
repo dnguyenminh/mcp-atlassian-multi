@@ -21,7 +21,7 @@ except ImportError:
 
 from .base import BasePreprocessor
 
-logger = logging.getLogger("mcp-atlassian")
+logger = logging.getLogger("mcp-atlassian-multi")
 
 
 class ConfluencePreprocessor(BasePreprocessor):

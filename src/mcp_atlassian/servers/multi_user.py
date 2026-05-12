@@ -15,7 +15,7 @@ from cachetools import TTLCache
 from mcp_atlassian.confluence import ConfluenceConfig, ConfluenceFetcher
 from mcp_atlassian.jira import JiraConfig, JiraFetcher
 
-logger = logging.getLogger("mcp-atlassian.multi-user")
+logger = logging.getLogger("mcp-atlassian-multi.multi-user")
 
 _jira_cache: TTLCache[str, JiraFetcher] = TTLCache(maxsize=50, ttl=300)
 _confluence_cache: TTLCache[str, ConfluenceFetcher] = TTLCache(maxsize=50, ttl=300)

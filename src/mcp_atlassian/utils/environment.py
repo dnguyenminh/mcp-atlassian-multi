@@ -5,7 +5,7 @@ import os
 
 from .urls import is_atlassian_cloud_url
 
-logger = logging.getLogger("mcp-atlassian.utils.environment")
+logger = logging.getLogger("mcp-atlassian-multi.utils.environment")
 
 
 def _check_service_auth(

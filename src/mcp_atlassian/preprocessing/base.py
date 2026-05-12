@@ -10,7 +10,7 @@ from typing import Any, Protocol
 from bs4 import BeautifulSoup, Tag
 from markdownify import markdownify as md
 
-logger = logging.getLogger("mcp-atlassian")
+logger = logging.getLogger("mcp-atlassian-multi")
 
 
 def _extract_blocks(

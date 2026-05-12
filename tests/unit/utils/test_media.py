@@ -1,6 +1,7 @@
 """Tests for the shared MIME detection and attachment download utilities."""
 
 import base64
+import sys
 
 import pytest
 
@@ -166,7 +167,7 @@ class TestFetchAndEncodeAttachment:
             ("photo.jpeg", "image/jpeg"),
             ("photo.gif", "image/gif"),
             ("doc.pdf", "application/pdf"),
-            ("archive.zip", "application/zip"),
+            ("archive.zip", "application/zip" if sys.platform != "win32" else "application/x-zip-compressed"),
             ("unknown", "application/octet-stream"),
         ],
         ids=[
