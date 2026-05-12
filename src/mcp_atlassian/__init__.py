@@ -22,7 +22,7 @@ if os.getenv(
 
         truststore.inject_into_ssl()
     except Exception:
-        logging.getLogger("mcp-atlassian").warning(
+        logging.getLogger("mcp-atlassian-multi").warning(
             "Failed to inject OS trust store; falling back to bundled certificates",
             exc_info=True,
         )
@@ -45,7 +45,7 @@ from mcp_atlassian.utils.lifecycle import (
 from mcp_atlassian.utils.logging import setup_logging
 
 try:
-    __version__ = version("mcp-atlassian")
+    __version__ = version("mcp-atlassian-multi")
 except PackageNotFoundError:
     # package is not installed
     __version__ = "0.0.0"
@@ -114,7 +114,7 @@ async def _run_stdio_with_stdin_guard(run_kwargs: dict[str, object]) -> None:
             raise server_result[0]
 
 
-@click.version_option(__version__, prog_name="mcp-atlassian")
+@click.version_option(__version__, prog_name="mcp-atlassian-multi")
 @click.command()
 @click.option(
     "-v",
@@ -195,6 +195,11 @@ async def _run_stdio_with_stdin_guard(run_kwargs: dict[str, object]) -> None:
     help="Comma-separated list of Jira project keys to filter search results",
 )
 @click.option(
+    "--multi-user",
+    is_flag=True,
+    help="Run in multi-user mode (credentials provided per-request via _meta)",
+)
+@click.option(
     "--read-only",
     is_flag=True,
     help="Run in read-only mode (disables all write operations)",
@@ -253,6 +258,7 @@ def main(
     jira_personal_token: str | None,
     jira_ssl_verify: bool,
     jira_projects_filter: str | None,
+    multi_user: bool,
     read_only: bool,
     enabled_tools: str | None,
     toolsets: str | None,

@@ -81,13 +81,13 @@ OAuth 2.0 provides enhanced security features but requires more setup. For most 
   <Step title="Run Setup Wizard">
     ```bash
     # Using uvx
-    uvx mcp-atlassian --oauth-setup -v
+    uvx mcp-atlassian-multi --oauth-setup -v
 
     # Or using Docker
     docker run --rm -i \
       -p 8080:8080 \
-      -v "${HOME}/.mcp-atlassian:/home/app/.mcp-atlassian" \
-      ghcr.io/sooperset/mcp-atlassian:latest --oauth-setup -v
+      -v "${HOME}/.mcp-atlassian-multi:/home/app/.mcp-atlassian-multi" \
+      ghcr.io/sooperset/mcp-atlassian-multi:latest --oauth-setup -v
     ```
   </Step>
   <Step title="Complete Authorization">
@@ -118,7 +118,7 @@ through the standard OAuth discovery/DCR flow (`401` challenge, `/.well-known/*`
 
 ```bash
 ATLASSIAN_OAUTH_PROXY_ENABLE=true
-PUBLIC_BASE_URL=https://mcp.example.com/mcp-atlassian
+PUBLIC_BASE_URL=https://mcp.example.com/mcp-atlassian-multi
 ATLASSIAN_OAUTH_ALLOWED_CLIENT_REDIRECT_URIS=http://localhost:*,http://127.0.0.1:*,https://chatgpt.com/connector_platform_oauth_redirect
 ATLASSIAN_OAUTH_ALLOWED_GRANT_TYPES=authorization_code,refresh_token
 ATLASSIAN_OAUTH_REQUIRE_CONSENT=true
@@ -149,11 +149,11 @@ For multi-tenant applications where users provide their own OAuth tokens:
 1. Enable minimal OAuth mode:
    ```bash
    # Using uvx
-   ATLASSIAN_OAUTH_ENABLE=true uvx mcp-atlassian --transport streamable-http --port 9000
+   ATLASSIAN_OAUTH_ENABLE=true uvx mcp-atlassian-multi --transport streamable-http --port 9000
 
    # Or using Docker
    docker run -e ATLASSIAN_OAUTH_ENABLE=true -p 9000:9000 \
-     ghcr.io/sooperset/mcp-atlassian:latest \
+     ghcr.io/sooperset/mcp-atlassian-multi:latest \
      --transport streamable-http --port 9000
    ```
 

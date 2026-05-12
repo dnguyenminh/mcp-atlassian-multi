@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from ..utils.oauth import OAuthConfig
 
 # Configure logging
-logger = logging.getLogger("mcp-atlassian.oauth-setup")
+logger = logging.getLogger("mcp-atlassian-multi.oauth-setup")
 
 # Global variables for callback handling
 authorization_code = None
@@ -302,7 +302,7 @@ def run_oauth_flow(args: OAuthSetupArgs) -> bool:
                 "They are stored securely in your system keyring and will be loaded automatically."
             )
             logger.info(
-                f"Token storage location (backup): ~/.mcp-atlassian/oauth-{oauth_config.client_id}.json"
+                f"Token storage location (backup): ~/.mcp-atlassian-multi/oauth-{oauth_config.client_id}.json"
             )
 
             # Generate VS Code configuration JSON snippet
@@ -310,7 +310,7 @@ def run_oauth_flow(args: OAuthSetupArgs) -> bool:
 
             vscode_config = {
                 "mcpServers": {
-                    "mcp-atlassian": {
+                    "mcp-atlassian-multi": {
                         "command": "docker",
                         "args": [
                             "run",
@@ -332,7 +332,7 @@ def run_oauth_flow(args: OAuthSetupArgs) -> bool:
                             "ATLASSIAN_OAUTH_SCOPE",
                             "-e",
                             "ATLASSIAN_OAUTH_CLOUD_ID",
-                            "ghcr.io/sooperset/mcp-atlassian:latest",
+                            "ghcr.io/sooperset/mcp-atlassian-multi:latest",
                         ],
                         "env": {
                             "CONFLUENCE_URL": "https://your-company.atlassian.net/wiki",

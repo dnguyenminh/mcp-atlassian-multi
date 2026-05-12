@@ -57,7 +57,7 @@ class TestTransportLifecycleBehavior:
                         mock_click_ctx.return_value = mock_ctx_instance
 
                         # Execute main
-                        with patch("sys.argv", ["mcp-atlassian"]):
+                        with patch("sys.argv", ["mcp-atlassian-multi"]):
                             try:
                                 main()
                             except SystemExit:
@@ -161,7 +161,7 @@ class TestTransportLifecycleBehavior:
                         mock_click_ctx.return_value = mock_ctx_instance
 
                         # Run main
-                        with patch("sys.argv", ["mcp-atlassian"]):
+                        with patch("sys.argv", ["mcp-atlassian-multi"]):
                             try:
                                 main()
                             except SystemExit:
@@ -221,7 +221,7 @@ class TestTransportLifecycleBehavior:
                     mock_server_class.return_value = mock_server
 
                     # Simulate Docker container startup
-                    with patch("sys.argv", ["mcp-atlassian"]):
+                    with patch("sys.argv", ["mcp-atlassian-multi"]):
                         try:
                             main()
                         except SystemExit:
@@ -258,7 +258,7 @@ class TestRegressionPrevention:
         with patch("mcp_atlassian.setup_signal_handlers") as mock_setup:
             with patch("asyncio.run"):
                 with patch("mcp_atlassian.servers.main.AtlassianMCP"):
-                    with patch("sys.argv", ["mcp-atlassian"]):
+                    with patch("sys.argv", ["mcp-atlassian-multi"]):
                         try:
                             main()
                         except SystemExit:

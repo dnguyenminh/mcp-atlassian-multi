@@ -49,7 +49,7 @@ from .context import MainAppContext
 from .jira import jira_mcp
 from .oauth_proxy import HardenedOAuthProxy, parse_env_list
 
-logger = logging.getLogger("mcp-atlassian.server.main")
+logger = logging.getLogger("mcp-atlassian-multi.server.main")
 
 DEFAULT_HOST = "0.0.0.0"  # noqa: S104
 DEFAULT_ALLOWED_REDIRECT_URIS = [

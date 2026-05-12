@@ -36,7 +36,7 @@ class TestMainTransportSelection:
         """
         with patch("mcp_atlassian.servers.main.AtlassianMCP", return_value=mock_server):
             with patch.dict("os.environ", {"TRANSPORT": transport}):
-                with patch("sys.argv", ["mcp-atlassian"]):
+                with patch("sys.argv", ["mcp-atlassian-multi"]):
                     try:
                         main()
                     except SystemExit:
@@ -55,7 +55,7 @@ class TestMainTransportSelection:
     def test_stdio_transport_uses_stdin_guard(self, mock_server, mock_asyncio_run):
         with patch("mcp_atlassian.servers.main.AtlassianMCP", return_value=mock_server):
             with patch.dict("os.environ", {"TRANSPORT": "stdio"}):
-                with patch("sys.argv", ["mcp-atlassian"]):
+                with patch("sys.argv", ["mcp-atlassian-multi"]):
                     try:
                         main()
                     except SystemExit:
@@ -78,7 +78,7 @@ class TestMainTransportSelection:
                 "os.environ",
                 {"STATELESS": stateless, "TRANSPORT": "streamable-http"},
             ):
-                with patch("sys.argv", ["mcp-atlassian"]):
+                with patch("sys.argv", ["mcp-atlassian-multi"]):
                     try:
                         main()
                     except SystemExit:
@@ -96,7 +96,7 @@ class TestMainTransportSelection:
     def test_stateless_rejects_non_streamable_http(self, mock_asyncio_run, transport):
         """Verify that --stateless flag errors when used with non-streamable-http transport."""
         with patch.dict("os.environ", {"STATELESS": "true", "TRANSPORT": transport}):
-            with patch("sys.argv", ["mcp-atlassian"]):
+            with patch("sys.argv", ["mcp-atlassian-multi"]):
                 with pytest.raises(SystemExit) as exc_info:
                     main()
 
@@ -108,7 +108,7 @@ class TestMainTransportSelection:
         with patch("mcp_atlassian.servers.main.AtlassianMCP", return_value=mock_server):
             with patch.dict("os.environ", {"TRANSPORT": "sse"}):
                 # Simulate CLI args with --transport stdio
-                with patch("sys.argv", ["mcp-atlassian", "--transport", "stdio"]):
+                with patch("sys.argv", ["mcp-atlassian-multi", "--transport", "stdio"]):
                     try:
                         main()
                     except SystemExit:
@@ -152,7 +152,7 @@ class TestMainTransportSelection:
                 # Patch where it's imported in the main module
                 with patch("mcp_atlassian.setup_signal_handlers") as mock_setup:
                     with patch.dict("os.environ", {"TRANSPORT": "stdio"}):
-                        with patch("sys.argv", ["mcp-atlassian"]):
+                        with patch("sys.argv", ["mcp-atlassian-multi"]):
                             try:
                                 main()
                             except SystemExit:
@@ -177,7 +177,7 @@ class TestMainTransportSelection:
                 mock_run.side_effect = error
 
                 with patch.dict("os.environ", {"TRANSPORT": "stdio"}):
-                    with patch("sys.argv", ["mcp-atlassian"]):
+                    with patch("sys.argv", ["mcp-atlassian-multi"]):
                         # The main function logs the error and exits with code 1
                         with patch("sys.exit") as mock_exit:
                             main()

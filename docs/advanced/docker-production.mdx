@@ -15,7 +15,7 @@ docker run -i --rm \
   -e CONFLUENCE_URL=https://your-company.atlassian.net/wiki \
   -e CONFLUENCE_USERNAME=your.email@example.com \
   -e CONFLUENCE_API_TOKEN=your_api_token \
-  ghcr.io/sooperset/mcp-atlassian:latest
+  ghcr.io/sooperset/mcp-atlassian-multi:latest
 ```
 
 ## Docker Compose
@@ -25,8 +25,8 @@ docker run -i --rm \
 ```yaml
 version: "3.8"
 services:
-  mcp-atlassian:
-    image: ghcr.io/sooperset/mcp-atlassian:latest
+  mcp-atlassian-multi:
+    image: ghcr.io/sooperset/mcp-atlassian-multi:latest
     env_file: .env
     ports:
       - "8000:8000"
@@ -42,8 +42,8 @@ services:
 ```yaml
 version: "3.8"
 services:
-  mcp-atlassian:
-    image: ghcr.io/sooperset/mcp-atlassian:latest
+  mcp-atlassian-multi:
+    image: ghcr.io/sooperset/mcp-atlassian-multi:latest
     env_file: .env
     ports:
       - "8000:8000"
@@ -68,7 +68,7 @@ Run separate Jira and Confluence services:
 version: "3.8"
 services:
   jira-mcp:
-    image: ghcr.io/sooperset/mcp-atlassian:latest
+    image: ghcr.io/sooperset/mcp-atlassian-multi:latest
     env_file: .env.jira
     ports:
       - "8001:8000"
@@ -78,7 +78,7 @@ services:
       - TOOLSETS=jira_issues,jira_fields,jira_transitions
 
   confluence-mcp:
-    image: ghcr.io/sooperset/mcp-atlassian:latest
+    image: ghcr.io/sooperset/mcp-atlassian-multi:latest
     env_file: .env.confluence
     ports:
       - "8002:8000"
@@ -126,20 +126,20 @@ For Kubernetes deployments:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mcp-atlassian
+  name: mcp-atlassian-multi
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mcp-atlassian
+      app: mcp-atlassian-multi
   template:
     metadata:
       labels:
-        app: mcp-atlassian
+        app: mcp-atlassian-multi
     spec:
       containers:
-      - name: mcp-atlassian
-        image: ghcr.io/sooperset/mcp-atlassian:latest
+      - name: mcp-atlassian-multi
+        image: ghcr.io/sooperset/mcp-atlassian-multi:latest
         ports:
         - containerPort: 8000
         env:
@@ -166,10 +166,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mcp-atlassian
+  name: mcp-atlassian-multi
 spec:
   selector:
-    app: mcp-atlassian
+    app: mcp-atlassian-multi
   ports:
   - port: 8000
     targetPort: 8000

@@ -8,7 +8,7 @@ from requests.exceptions import HTTPError
 from ..exceptions import MCPAtlassianAuthenticationError
 from .client import ConfluenceClient
 
-logger = logging.getLogger("mcp-atlassian")
+logger = logging.getLogger("mcp-atlassian-multi")
 
 
 class UsersMixin(ConfluenceClient):

@@ -17,6 +17,7 @@ from starlette.requests import Request
 from mcp_atlassian.confluence import ConfluenceConfig, ConfluenceFetcher
 from mcp_atlassian.jira import JiraConfig, JiraFetcher
 from mcp_atlassian.servers.context import MainAppContext
+from mcp_atlassian.servers.multi_user import resolve_jira_from_meta, resolve_confluence_from_meta
 from mcp_atlassian.utils.oauth import OAuthConfig
 from mcp_atlassian.utils.urls import validate_url_for_ssrf
 
@@ -26,7 +27,7 @@ if TYPE_CHECKING:
     )
     from mcp_atlassian.jira.config import JiraConfig as UserJiraConfigType
 
-logger = logging.getLogger("mcp-atlassian.servers.dependencies")
+logger = logging.getLogger("mcp-atlassian-multi.servers.dependencies")
 
 
 # ---------------------------------------------------------------------------
@@ -497,6 +498,30 @@ def _create_user_config_for_fetcher(
         return user_confluence_config
     else:
         raise TypeError(f"Unsupported base_config type: {type(base_config)}")
+
+
+def _extract_meta_from_context(ctx: Context) -> dict[str, Any] | None:
+    """Extract _meta from the current tool call context.
+
+    FastMCP passes _meta through context when available.
+    """
+    try:
+        req_ctx = ctx.request_context
+        if req_ctx and hasattr(req_ctx, "meta"):
+            return req_ctx.meta
+        # Try accessing from params if available
+        if hasattr(ctx, "_meta"):
+            return ctx._meta
+        # Try from request context params
+        if req_ctx and hasattr(req_ctx, "params"):
+            params = req_ctx.params
+            if hasattr(params, "_meta"):
+                return params._meta
+            if isinstance(params, dict):
+                return params.get("_meta")
+    except Exception as e:
+        logger.debug(f"Could not extract _meta from context: {e}")
+    return None
 
 
 async def _get_fetcher(ctx: Context, spec: _ServiceSpec) -> Any:

@@ -139,7 +139,7 @@ class ConfluenceConfig:
             # Server/DC: PAT takes priority over OAuth (fixes #824)
             if personal_token:
                 if oauth_config:
-                    logger = logging.getLogger("mcp-atlassian.confluence.config")
+                    logger = logging.getLogger("mcp-atlassian-multi.confluence.config")
                     logger.warning(
                         "Both PAT and OAuth configured for Server/DC. Using PAT."
                     )
@@ -213,7 +213,7 @@ class ConfluenceConfig:
         Returns:
             bool: True if authentication is fully configured, False otherwise.
         """
-        logger = logging.getLogger("mcp-atlassian.confluence.config")
+        logger = logging.getLogger("mcp-atlassian-multi.confluence.config")
         if self.auth_type == "oauth":
             if self.oauth_config:
                 # Minimal OAuth (user-provided tokens mode)
