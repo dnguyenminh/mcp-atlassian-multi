@@ -49,13 +49,18 @@ def resolve_jira_from_meta(meta: dict[str, Any] | None) -> JiraFetcher | None:
     try:
         if jira_pat:
             config = JiraConfig(
-                url=jira_url, auth_type="pat",
-                personal_token=jira_pat, ssl_verify=True,
+                url=jira_url,
+                auth_type="pat",
+                personal_token=jira_pat,
+                ssl_verify=True,
             )
         elif jira_username and jira_token:
             config = JiraConfig(
-                url=jira_url, auth_type="basic",
-                username=jira_username, api_token=jira_token, ssl_verify=True,
+                url=jira_url,
+                auth_type="basic",
+                username=jira_username,
+                api_token=jira_token,
+                ssl_verify=True,
             )
         else:
             logger.warning("Incomplete Jira credentials in _meta")
@@ -92,13 +97,18 @@ def resolve_confluence_from_meta(
     try:
         if pat:
             config = ConfluenceConfig(
-                url=confluence_url, auth_type="pat",
-                personal_token=pat, ssl_verify=True,
+                url=confluence_url,
+                auth_type="pat",
+                personal_token=pat,
+                ssl_verify=True,
             )
         elif username and token:
             config = ConfluenceConfig(
-                url=confluence_url, auth_type="basic",
-                username=username, api_token=token, ssl_verify=True,
+                url=confluence_url,
+                auth_type="basic",
+                username=username,
+                api_token=token,
+                ssl_verify=True,
             )
         else:
             logger.warning("Incomplete Confluence credentials in _meta")
@@ -107,11 +117,10 @@ def resolve_confluence_from_meta(
         _confluence_cache[cache_key] = fetcher
         logger.info(
             "Created ConfluenceFetcher hash=%s url=%s",
-            cache_key[:8], confluence_url,
+            cache_key[:8],
+            confluence_url,
         )
         return fetcher
     except Exception as e:
-        logger.error(
-            "Failed to create ConfluenceFetcher from _meta: %s", e
-        )
+        logger.error("Failed to create ConfluenceFetcher from _meta: %s", e)
         return None
