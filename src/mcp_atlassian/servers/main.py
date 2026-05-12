@@ -362,9 +362,7 @@ class AtlassianMCP(FastMCP[MainAppContext]):
         return app
 
 
-token_validation_cache: TTLCache[
-    int, tuple[bool, str | None, JiraFetcher | None, ConfluenceFetcher | None]
-] = TTLCache(maxsize=100, ttl=300)
+token_validation_cache: TTLCache = TTLCache(maxsize=100, ttl=300)
 
 
 class UserTokenMiddleware:

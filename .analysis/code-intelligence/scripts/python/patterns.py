@@ -1,9 +1,9 @@
 """Pattern detection — identifies DI style, error handling, naming, etc."""
 
-from typing import Dict, List
 
-
-def detect_patterns(classes: List[dict], functions: List[dict], imports: List[str]) -> dict:
+def detect_patterns(
+    classes: list[dict], functions: list[dict], imports: list[str]
+) -> dict:
     """Detect coding patterns from aggregated parse results."""
     return {
         "diStyle": _detect_di(classes, functions, imports),
@@ -14,17 +14,24 @@ def detect_patterns(classes: List[dict], functions: List[dict], imports: List[st
     }
 
 
-def infer_module_purpose(name: str, classes: List[dict], packages: List[str]) -> str:
+def infer_module_purpose(name: str, classes: list[dict], packages: list[str]) -> str:
     """Infer a module's purpose from its contents."""
     all_names = " ".join([name] + [c["name"] for c in classes] + packages).lower()
     purposes = [
-        ("api", "API layer"), ("controller", "API layer"),
-        ("service", "Business logic"), ("business", "Business logic"),
-        ("repository", "Data access"), ("dao", "Data access"),
-        ("config", "Configuration"), ("common", "Shared utilities"),
-        ("shared", "Shared utilities"), ("test", "Testing"),
-        ("web", "Web/UI layer"), ("ui", "Web/UI layer"),
-        ("model", "Domain model"), ("domain", "Domain model"),
+        ("api", "API layer"),
+        ("controller", "API layer"),
+        ("service", "Business logic"),
+        ("business", "Business logic"),
+        ("repository", "Data access"),
+        ("dao", "Data access"),
+        ("config", "Configuration"),
+        ("common", "Shared utilities"),
+        ("shared", "Shared utilities"),
+        ("test", "Testing"),
+        ("web", "Web/UI layer"),
+        ("ui", "Web/UI layer"),
+        ("model", "Domain model"),
+        ("domain", "Domain model"),
     ]
     for keyword, purpose in purposes:
         if keyword in all_names:

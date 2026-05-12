@@ -1,34 +1,56 @@
 """Project type detection — identifies build system, language, and framework."""
 
 import os
-from typing import Dict, Optional, Tuple
 
 from config import SOURCE_EXTENSIONS
 
 BUILD_FILE_PRIORITY = [
-    ("build.gradle.kts", "gradle-kotlin"), ("build.gradle", "gradle-java"),
-    ("pom.xml", "maven-java"), ("package.json", "npm"),
-    ("Cargo.toml", "cargo-rust"), ("go.mod", "go-module"),
-    ("pyproject.toml", "python"), ("setup.py", "python"),
+    ("build.gradle.kts", "gradle-kotlin"),
+    ("build.gradle", "gradle-java"),
+    ("pom.xml", "maven-java"),
+    ("package.json", "npm"),
+    ("Cargo.toml", "cargo-rust"),
+    ("go.mod", "go-module"),
+    ("pyproject.toml", "python"),
+    ("setup.py", "python"),
 ]
 
 PROJECT_TYPE_LANGUAGE = {
-    "gradle-kotlin": "kotlin", "gradle-java": "java", "maven-java": "java",
-    "npm-typescript": "typescript", "npm-javascript": "javascript",
-    "cargo-rust": "rust", "go-module": "go", "python": "python",
-    "dotnet": "csharp", "generic": "unknown"
+    "gradle-kotlin": "kotlin",
+    "gradle-java": "java",
+    "maven-java": "java",
+    "npm-typescript": "typescript",
+    "npm-javascript": "javascript",
+    "cargo-rust": "rust",
+    "go-module": "go",
+    "python": "python",
+    "dotnet": "csharp",
+    "generic": "unknown",
 }
 
 FRAMEWORK_PATTERNS = {
-    "gradle-kotlin": [("spring-boot-starter", "Spring Boot"), ("io.ktor", "Ktor"), ("ktor-", "Ktor")],
+    "gradle-kotlin": [
+        ("spring-boot-starter", "Spring Boot"),
+        ("io.ktor", "Ktor"),
+        ("ktor-", "Ktor"),
+    ],
     "gradle-java": [("spring-boot-starter", "Spring Boot"), ("io.ktor", "Ktor")],
     "maven-java": [("spring-boot-starter", "Spring Boot"), ("io.quarkus", "Quarkus")],
-    "npm-typescript": [('"react"', "React"), ('"next"', "Next.js"), ('"@angular/core"', "Angular"),
-                       ('"vue"', "Vue.js"), ('"express"', "Express.js"), ('"@nestjs/core"', "NestJS")],
+    "npm-typescript": [
+        ('"react"', "React"),
+        ('"next"', "Next.js"),
+        ('"@angular/core"', "Angular"),
+        ('"vue"', "Vue.js"),
+        ('"express"', "Express.js"),
+        ('"@nestjs/core"', "NestJS"),
+    ],
     "npm-javascript": [('"react"', "React"), ('"express"', "Express.js")],
     "python": [("django", "Django"), ("flask", "Flask"), ("fastapi", "FastAPI")],
     "cargo-rust": [("actix-web", "Actix Web"), ("axum", "Axum"), ("rocket", "Rocket")],
-    "go-module": [("github.com/gin-gonic/gin", "Gin"), ("github.com/gofiber/fiber", "Fiber")],
+    "go-module": [
+        ("github.com/gin-gonic/gin", "Gin"),
+        ("github.com/gofiber/fiber", "Fiber"),
+    ],
 }
 
 
@@ -39,13 +61,19 @@ def detect_project_type(root_dir: str) -> dict:
     primary_language = _determine_language(root_dir, project_type)
     framework = _detect_framework(root_dir, build_file, project_type)
 
-    print(f"[Code-Index] INFO: Project detected — type={project_type}, "
-          f"language={primary_language}, framework={framework}, buildFile={build_file}")
-    return {"projectType": project_type, "primaryLanguage": primary_language,
-            "framework": framework, "buildFile": build_file}
+    print(
+        f"[Code-Index] INFO: Project detected — type={project_type}, "
+        f"language={primary_language}, framework={framework}, buildFile={build_file}"
+    )
+    return {
+        "projectType": project_type,
+        "primaryLanguage": primary_language,
+        "framework": framework,
+        "buildFile": build_file,
+    }
 
 
-def _find_build_file(root_dir: str) -> Tuple[str, str]:
+def _find_build_file(root_dir: str) -> tuple[str, str]:
     """Find the primary build file in priority order."""
     for filename, ptype in BUILD_FILE_PRIORITY:
         if os.path.isfile(os.path.join(root_dir, filename)):
@@ -76,13 +104,13 @@ def _determine_language(root_dir: str, project_type: str) -> str:
     return implied
 
 
-def _detect_framework(root_dir: str, build_file: str, project_type: str) -> Optional[str]:
+def _detect_framework(root_dir: str, build_file: str, project_type: str) -> str | None:
     """Detect framework from build file content."""
     if build_file == "none":
         return None
     build_path = os.path.join(root_dir, build_file)
     try:
-        content = open(build_path, "r", encoding="utf-8", errors="ignore").read()
+        content = open(build_path, encoding="utf-8", errors="ignore").read()
     except OSError:
         return None
     for pattern, fw in FRAMEWORK_PATTERNS.get(project_type, []):
@@ -91,12 +119,23 @@ def _detect_framework(root_dir: str, build_file: str, project_type: str) -> Opti
     return None
 
 
-def _count_source_files(directory: str, max_depth: int, depth: int = 0) -> Dict[str, int]:
+def _count_source_files(
+    directory: str, max_depth: int, depth: int = 0
+) -> dict[str, int]:
     """Recursively count source files by language."""
-    counts: Dict[str, int] = {}
+    counts: dict[str, int] = {}
     if depth > max_depth:
         return counts
-    skip = {"node_modules", ".git", "build", "dist", "out", "target", ".gradle", "vendor"}
+    skip = {
+        "node_modules",
+        ".git",
+        "build",
+        "dist",
+        "out",
+        "target",
+        ".gradle",
+        "vendor",
+    }
     try:
         entries = os.scandir(directory)
     except OSError:
@@ -105,7 +144,9 @@ def _count_source_files(directory: str, max_depth: int, depth: int = 0) -> Dict[
         if entry.is_dir(follow_symlinks=False):
             if entry.name in skip:
                 continue
-            for lang, count in _count_source_files(entry.path, max_depth, depth + 1).items():
+            for lang, count in _count_source_files(
+                entry.path, max_depth, depth + 1
+            ).items():
                 counts[lang] = counts.get(lang, 0) + count
         elif entry.is_file():
             ext = os.path.splitext(entry.name)[1].lower()

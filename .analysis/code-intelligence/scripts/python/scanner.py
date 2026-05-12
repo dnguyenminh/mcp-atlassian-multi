@@ -1,13 +1,12 @@
 """File scanner — discovers and filters source files for indexing."""
 
 import os
-from typing import List
 
 from config import DEFAULT_CONFIG
 from utils import compute_hash, glob_match, map_extension
 
 
-def scan_files(config: dict, source_dirs: List[str], root_dir: str) -> List[dict]:
+def scan_files(config: dict, source_dirs: list[str], root_dir: str) -> list[dict]:
     """Recursively scan source directories and return matching files."""
     results = []
     for src_dir in source_dirs:
@@ -24,7 +23,9 @@ def _walk_directory(directory: str, root_dir: str, config: dict, results: list):
         return
     for entry in entries:
         if entry.is_dir(follow_symlinks=False):
-            if entry.name in config.get("excludedDirectories", DEFAULT_CONFIG["excludedDirectories"]):
+            if entry.name in config.get(
+                "excludedDirectories", DEFAULT_CONFIG["excludedDirectories"]
+            ):
                 continue
             _walk_directory(entry.path, root_dir, config, results)
         elif entry.is_file():
@@ -33,7 +34,13 @@ def _walk_directory(directory: str, root_dir: str, config: dict, results: list):
                 try:
                     content_hash = compute_hash(entry.path)
                     language = map_extension(rel_path)
-                    results.append({"filePath": rel_path, "contentHash": content_hash, "language": language})
+                    results.append(
+                        {
+                            "filePath": rel_path,
+                            "contentHash": content_hash,
+                            "language": language,
+                        }
+                    )
                 except OSError:
                     pass
 
@@ -41,9 +48,15 @@ def _walk_directory(directory: str, root_dir: str, config: dict, results: list):
 def _should_include(file_path: str, config: dict) -> bool:
     """Check if a file should be included based on config rules."""
     basename = os.path.basename(file_path)
-    included_exts = config.get("includedExtensions", DEFAULT_CONFIG["includedExtensions"])
-    excluded_dirs = config.get("excludedDirectories", DEFAULT_CONFIG["excludedDirectories"])
-    excluded_patterns = config.get("excludedFilePatterns", DEFAULT_CONFIG["excludedFilePatterns"])
+    included_exts = config.get(
+        "includedExtensions", DEFAULT_CONFIG["includedExtensions"]
+    )
+    excluded_dirs = config.get(
+        "excludedDirectories", DEFAULT_CONFIG["excludedDirectories"]
+    )
+    excluded_patterns = config.get(
+        "excludedFilePatterns", DEFAULT_CONFIG["excludedFilePatterns"]
+    )
 
     if not any(basename.endswith(ext) for ext in included_exts):
         return False

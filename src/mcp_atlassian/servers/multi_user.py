@@ -17,8 +17,8 @@ from mcp_atlassian.jira import JiraConfig, JiraFetcher
 
 logger = logging.getLogger("mcp-atlassian-multi.multi-user")
 
-_jira_cache: TTLCache[str, JiraFetcher] = TTLCache(maxsize=50, ttl=300)
-_confluence_cache: TTLCache[str, ConfluenceFetcher] = TTLCache(maxsize=50, ttl=300)
+_jira_cache: TTLCache = TTLCache(maxsize=50, ttl=300)
+_confluence_cache: TTLCache = TTLCache(maxsize=50, ttl=300)
 
 
 def _hash_credentials(creds: dict[str, str]) -> str:

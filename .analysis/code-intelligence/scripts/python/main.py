@@ -22,7 +22,7 @@ from generator import generate_module_analysis, generate_project_structure
 from parser import parse_file
 from patterns import detect_patterns, infer_module_purpose
 from scanner import scan_files
-from utils import atomic_write, infer_package_purpose
+from utils import atomic_write
 
 
 def run_full_index(root_dir: str) -> dict:
@@ -46,13 +46,20 @@ def run_full_index(root_dir: str) -> dict:
     total_classes = sum(len(m["classes"]) for m in modules_data)
     total_functions = sum(len(m["functions"]) for m in modules_data)
 
-    print(f"\n[Code-Index] INFO: Full index complete — {total_files} files, "
-          f"{len(modules_data)} modules, {total_classes} classes, "
-          f"{total_functions} functions, {elapsed}ms")
+    print(
+        f"\n[Code-Index] INFO: Full index complete — {total_files} files, "
+        f"{len(modules_data)} modules, {total_classes} classes, "
+        f"{total_functions} functions, {elapsed}ms"
+    )
 
-    return {"totalFiles": total_files, "totalModules": len(modules_data),
-            "totalClasses": total_classes, "totalFunctions": total_functions,
-            "parseErrors": 0, "elapsedMs": elapsed}
+    return {
+        "totalFiles": total_files,
+        "totalModules": len(modules_data),
+        "totalClasses": total_classes,
+        "totalFunctions": total_functions,
+        "parseErrors": 0,
+        "elapsedMs": elapsed,
+    }
 
 
 def _process_modules(modules, config, root, detection):
@@ -65,8 +72,14 @@ def _process_modules(modules, config, root, detection):
 
         for file_info in scanned:
             total += 1
-            print(f"\r[Code-Index] INFO: Indexing — {total} files ({mod['name']})", end="")
-            result = parse_file(os.path.join(root, file_info["filePath"]), file_info["language"], mod["name"])
+            print(
+                f"\r[Code-Index] INFO: Indexing — {total} files ({mod['name']})", end=""
+            )
+            result = parse_file(
+                os.path.join(root, file_info["filePath"]),
+                file_info["language"],
+                mod["name"],
+            )
             classes.extend(result.get("classes", []))
             functions.extend(result.get("functions", []))
             imports.extend(result.get("imports", []))
@@ -79,14 +92,21 @@ def _process_modules(modules, config, root, detection):
 
         patterns = detect_patterns(classes, functions, imports)
         purpose = infer_module_purpose(mod["name"], classes, list(pkg_set))
-        modules_data.append({
-            "name": mod["name"], "path": mod["path"],
-            "language": mod.get("language") or detection["primaryLanguage"],
-            "framework": detection["framework"], "dependencies": list(dep_set),
-            "sourceFileCount": len(scanned), "packages": list(pkg_set),
-            "classes": classes, "functions": functions,
-            "patterns": patterns, "purpose": purpose
-        })
+        modules_data.append(
+            {
+                "name": mod["name"],
+                "path": mod["path"],
+                "language": mod.get("language") or detection["primaryLanguage"],
+                "framework": detection["framework"],
+                "dependencies": list(dep_set),
+                "sourceFileCount": len(scanned),
+                "packages": list(pkg_set),
+                "classes": classes,
+                "functions": functions,
+                "patterns": patterns,
+                "purpose": purpose,
+            }
+        )
     return modules_data
 
 
@@ -98,9 +118,11 @@ def _write_metadata(root, output_dir, detection, modules_data):
         "lastFullIndexTimestamp": datetime.now(timezone.utc).isoformat(),
         "projectName": os.path.basename(root),
         "projectType": detection["projectType"],
-        "totalFiles": total_files
+        "totalFiles": total_files,
     }
-    atomic_write(os.path.join(output_dir, "index-metadata.json"), json.dumps(metadata, indent=2))
+    atomic_write(
+        os.path.join(output_dir, "index-metadata.json"), json.dumps(metadata, indent=2)
+    )
 
 
 def _write_analysis(output_dir, detection, modules_data, root):
@@ -109,7 +131,7 @@ def _write_analysis(output_dir, detection, modules_data, root):
         "projectName": os.path.basename(root),
         "projectType": detection["projectType"],
         "primaryLanguage": detection["primaryLanguage"],
-        "framework": detection["framework"]
+        "framework": detection["framework"],
     }
     generate_project_structure(modules_data, project_info, output_dir)
     for mod_data in modules_data:
@@ -120,13 +142,22 @@ def _write_kb_payloads(output_dir, modules_data, root):
     """Generate kb-payloads.json for Knowledge Base ingestion."""
     payloads = []
     for mod in modules_data:
-        content = (f"Module: {mod['name']}\nLanguage: {mod['language']}\n"
-                   f"Purpose: {mod['purpose']}\nFiles: {mod['sourceFileCount']}\n"
-                   f"Classes: {len(mod['classes'])}\nFunctions: {len(mod['functions'])}")
-        payloads.append({"title": f"Code Index — {mod['name']}", "content": content,
-                         "tags": f"code-index, {mod['name']}, {mod['language']}",
-                         "project": os.path.basename(root)})
-    atomic_write(os.path.join(output_dir, "kb-payloads.json"), json.dumps(payloads, indent=2))
+        content = (
+            f"Module: {mod['name']}\nLanguage: {mod['language']}\n"
+            f"Purpose: {mod['purpose']}\nFiles: {mod['sourceFileCount']}\n"
+            f"Classes: {len(mod['classes'])}\nFunctions: {len(mod['functions'])}"
+        )
+        payloads.append(
+            {
+                "title": f"Code Index — {mod['name']}",
+                "content": content,
+                "tags": f"code-index, {mod['name']}, {mod['language']}",
+                "project": os.path.basename(root),
+            }
+        )
+    atomic_write(
+        os.path.join(output_dir, "kb-payloads.json"), json.dumps(payloads, indent=2)
+    )
 
 
 def _cleanup_stale_modules(output_dir, modules_data):
