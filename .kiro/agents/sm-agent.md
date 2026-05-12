@@ -151,7 +151,7 @@ KSA tạo tài liệu đầy đủ
    ```
    # Jira Configuration
    # Used by SM agent to identify project scope
-   
+
    JIRA_PROJECT_PREFIX={PROJECT_KEY}
    ```
 
@@ -436,9 +436,9 @@ SM **không dừng lại để hỏi** về template. Thông báo rồi chạy t
    issue = the discovered project tracker "get issue" tool (issue_key: "{TICKET}")
    jiraStatus = issue.status  // "To Do", "Docs Review", "In Progress", "In Review", "QA Test", "UAT", "Ready For Product", "Done"
    ```
-   
+
    **Auto-advance based on Jira status:**
-   
+
    | Jira Status | SM Action |
    |-------------|-----------|
    | To Do | Bắt đầu từ Phase 1 (hoặc resume phase hiện tại) |
@@ -449,16 +449,16 @@ SM **không dừng lại để hỏi** về template. Thông báo rồi chạy t
    | UAT | Thông báo user đang UAT, đợi kết quả |
    | Ready For Product | Tiếp tục Phase 7 (Deployment) |
    | Done | Ticket hoàn thành, không cần làm gì |
-   
+
    **Quan trọng:** Nếu Jira status đã advance (ví dụ: reviewer đã chuyển DOCS REVIEW → IN PROGRESS), SM tự động tiếp tục phase tương ứng mà KHÔNG cần user nói lại.
 
 4. **Read Jira comments** (MANDATORY on every resume):
    ```
    the discovered project tracker "get issue" tool (issue_key: "{TICKET}", comment_limit: 10)
    ```
-   
+
    **Parse comments to determine actions:**
-   
+
    | Comment Pattern | SM Action |
    |----------------|-----------|
    | PO/Reviewer says "approved", "LGTM", "OK to proceed" | Auto-advance to next phase |
@@ -469,9 +469,9 @@ SM **không dừng lại để hỏi** về template. Thông báo rồi chạy t
    | QA reports bug | Trigger DEV↔QA loop |
    | Any comment mentioning "scope change", "thêm requirement", "bỏ requirement" | **⚠️ CRITICAL**: Re-read ticket → compare with BRD → invoke BA to update BRD/FSD |
    | Any comment with action items | Include in status report to user |
-   
+
    **⚠️ Description Change Handling (MANDATORY):**
-   
+
    When a comment indicates the ticket description was updated:
    1. Re-fetch the ticket: `the discovered project tracker "get issue" tool (issue_key: "{TICKET}")`
    2. Compare new description with existing BRD content (from KB or file)
@@ -482,7 +482,7 @@ SM **không dừng lại để hỏi** về template. Thông báo rồi chạy t
       - If TDD already exists → mark as `needs_revision` (SA needs to re-review)
    4. If description changes are cosmetic (formatting, typos) → no action needed
    5. Log: "Description change detected. Impact: {none / BRD update / FSD update / TDD revision needed}"
-   
+
    **Comment processing rules:**
    - Only process comments **newer than** `STATUS.json.lastUpdated` (avoid re-processing old comments)
    - If comment is from the same user who invoked SM → ignore (user already knows)
@@ -493,7 +493,7 @@ SM **không dừng lại để hỏi** về template. Thông báo rồi chạy t
 5. **Report current status to user:**
    ```
    📋 {TICKET} — Status Report
-   
+
    Jira Status: {jiraStatus}
    Phase 1 (Requirements): ✅ BRD.md v1
    Phase 2 (Specification): ✅ FSD.md v2
@@ -502,9 +502,9 @@ SM **không dừng lại để hỏi** về template. Thông báo rồi chạy t
    Phase 5 (Implementation): ⏳ Not started
    Phase 6 (Testing): ⏳ Not started
    Phase 7 (Deployment): ⏳ Not started
-   
+
    💬 Recent comments: {summary of unprocessed comments, if any}
-   
+
    ➡️ Tiếp tục Phase 3 (Design)?
    ```
 
@@ -612,13 +612,13 @@ SM **không dừng lại để hỏi** về template. Thông báo rồi chạy t
    // Chỉ attach nếu document có update (version mới)
    // Tên file trong Jira: {DOC}-v{version}-{TICKET}.docx
    // Ví dụ: BRD-v1-SCRUM-50.docx, FSD-v1-SCRUM-50.docx, TDD-v1-SCRUM-50.docx
-   
+
    // Step 7a: Export DOCX (MANDATORY) — Flow: embed_images → export_docx(file_path=...)
    // ⛔ NEVER pass markdown content directly — always use file_path
    embed_images(file_path=".../{TICKET}/BRD.md", output_path=".../{TICKET}/BRD-embedded.md")
    export_docx(file_path=".../{TICKET}/BRD-embedded.md", file_name="BRD-v1-{TICKET}")
    // Repeat for FSD, TDD (embed_images first, then export_docx with file_path)
-   
+
    // Step 7b: Attach to Jira (MANDATORY)
    the discovered project tracker "update issue" tool (issue_key: "{TICKET}", attachments: "documents/{TICKET}/BRD-v{version}-{TICKET}.docx")
    the discovered project tracker "update issue" tool (issue_key: "{TICKET}", attachments: "documents/{TICKET}/FSD-v{version}-{TICKET}.docx")
@@ -644,28 +644,28 @@ SM **không dừng lại để hỏi** về template. Thông báo rồi chạy t
 iteration = 0
 while DISCREPANCY.md exists AND iteration < 5:
     iteration++
-    
+
     1. Read DISCREPANCY.md
     2. Count discrepancies by severity
     3. Report: "⚠️ Vòng {iteration}/5 — SA phát hiện {n} discrepancies ({critical} Critical, {high} High, {low} Low)"
-    
+
     4. Invoke BA to fix FSD:
        invokeSubAgent(
          name: "ba-agent",
          prompt: "Đọc discrepancy report tại documents/{TICKET}/DISCREPANCY.md và cập nhật FSD cho {TICKET}. Chỉ fix FSD, không tạo lại BRD.",
          contextFiles: [{ "path": ".kiro/steering/drawio.md" }]
        )
-    
+
     5. Verify FSD updated
     6. Update STATUS: specification.version++
-    
+
     7. Invoke SA to review:
        invokeSubAgent(
          name: "sa-agent",
          prompt: "Review lại FSD đã cập nhật và tạo lại TDD cho {TICKET}. Kiểm tra discrepancies trước đó đã được fix chưa.",
          contextFiles: [{ "path": ".kiro/steering/drawio.md" }]
        )
-    
+
     8. Check DISCREPANCY.md exists?
        - Yes → continue loop
        - No → break (all resolved)
@@ -779,7 +779,7 @@ If review found issues:
    - {N}% automated, {N}% manual
    - RTM coverage: 100%
    - Review: Approved {with N conditions}
-   
+
    Chuyển sang Phase 5 (Implementation)?
    ```
 4. Wait for user confirmation.
@@ -900,9 +900,9 @@ If review found issues:
    - Read STC.md to identify IT-level test cases and their specified techniques (Testcontainers, Ktor testApplication, mock servers, etc.)
    - Read actual IT test source files (e.g., `*IntegrationTest.kt`)
    - Compare: does the test code use the technique STC specified?
-   
+
    **Check for these red flags:**
-   
+
    | Red Flag | Meaning | Action |
    |----------|---------|--------|
    | IT test uses `mockk()` for ALL dependencies | Not a real integration test | ❌ Send back to DEV |
@@ -910,11 +910,11 @@ If review found issues:
    | IT test has no Testcontainers when STC requires it | Missing real DB/infra testing | ❌ Send back to DEV |
    | IT test mocks Connection/Transport | Missing real process interaction | ❌ Send back to DEV |
    | Config reload test only parses YAML | Missing actual file watcher test | ⚠️ Flag as degraded |
-   
+
    **Acceptable exceptions:**
    - External paid APIs (OpenAI, cloud services) → mock is OK
    - DEV documented limitation with TODO comment → accept as degraded, track as tech debt
-   
+
    **If issues found:**
    ```
    invokeSubAgent(

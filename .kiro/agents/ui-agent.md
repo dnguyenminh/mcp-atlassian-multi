@@ -398,13 +398,13 @@ Add comment block at top of each HTML file:
 <!--
   UI Prototype — {Screen Name}
   Ticket: {TICKET}
-  
+
   DEV TODO:
   1. Replace mock data with fetch() calls
   2. Wire form submit to POST endpoint
   3. Add error handling (toast on failure)
   4. Add loading states
-  
+
   API Endpoints (from FSD):
   - GET /admin/users → populate table
   - POST /admin/users → create user

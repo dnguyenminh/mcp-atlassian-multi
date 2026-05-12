@@ -1,7 +1,7 @@
 ---
 name: ba-agent
 description: >
-  Business Analyst agent chuyên truy cập Jira, đọc ticket và tất cả linked tickets và các attachment (đệ qui cho đến không còn ticket nào liên kết nữa), 
+  Business Analyst agent chuyên truy cập Jira, đọc ticket và tất cả linked tickets và các attachment (đệ qui cho đến không còn ticket nào liên kết nữa),
   lưu thông tin vào knowledge base, và xây dựng Business Requirements Document (BRD) hoặc Functional Specification Document (FSD).
   Sử dụng bằng cách cung cấp Jira ticket key (ví dụ: PROJ-123).
 tools: ["read", "shell", "@mcp"]
@@ -259,7 +259,7 @@ After creating ALL `.drawio` files, you MUST export each one to PNG using the dr
   <mxCell id="e1" edge="1" parent="1" source="a" target="b" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
     <mxGeometry relative="1" as="geometry"/>
   </mxCell>
-  
+
   <!-- ❌ WRONG — arrow INVISIBLE, self-closing -->
   <mxCell id="e1" edge="1" parent="1" source="a" target="b" style="..." />
   ```

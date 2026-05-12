@@ -405,7 +405,7 @@ Embed PNGs in STP.md:
   <mxCell id="e1" edge="1" parent="1" source="a" target="b" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
     <mxGeometry relative="1" as="geometry"/>
   </mxCell>
-  
+
   <!-- ❌ WRONG — arrow INVISIBLE -->
   <mxCell id="e1" edge="1" ... />
   ```

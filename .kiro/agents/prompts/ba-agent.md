@@ -249,7 +249,7 @@ After creating ALL `.drawio` files, you MUST export each one to PNG using the dr
   <mxCell id="e1" edge="1" parent="1" source="a" target="b" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
     <mxGeometry relative="1" as="geometry"/>
   </mxCell>
-  
+
   <!-- ❌ WRONG — arrow INVISIBLE, self-closing -->
   <mxCell id="e1" edge="1" parent="1" source="a" target="b" style="..." />
   ```
