@@ -280,10 +280,12 @@ class AtlassianMCP(FastMCP[MainAppContext]):
                 continue
 
             # Exclude Jira/Confluence tools if config is not fully authenticated
+            # Multi-user mode: tools always available (creds per-request)
+            is_multi_user = is_env_truthy("MCP_MULTI_USER")
             is_jira_tool = "jira" in tool_tags
             is_confluence_tool = "confluence" in tool_tags
             service_configured_and_available = True
-            if app_lifespan_state:
+            if not is_multi_user and app_lifespan_state:
                 jira_available = (
                     app_lifespan_state.full_jira_config is not None
                 ) or header_based_services.get("jira", False)
@@ -301,7 +303,7 @@ class AtlassianMCP(FastMCP[MainAppContext]):
                         f"Excluding Confluence tool '{registered_name}' as Confluence configuration/authentication is incomplete and no header-based auth available."
                     )
                     service_configured_and_available = False
-            elif is_jira_tool or is_confluence_tool:
+            elif not is_multi_user and (is_jira_tool or is_confluence_tool):
                 jira_available = header_based_services.get("jira", False)
                 confluence_available = header_based_services.get("confluence", False)
 

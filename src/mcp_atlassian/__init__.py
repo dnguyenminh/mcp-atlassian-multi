@@ -409,6 +409,8 @@ def main(
         os.environ["ATLASSIAN_OAUTH_CLOUD_ID"] = oauth_cloud_id
     if click_ctx and was_option_provided(click_ctx, "oauth_access_token"):
         os.environ["ATLASSIAN_OAUTH_ACCESS_TOKEN"] = oauth_access_token
+    if click_ctx and was_option_provided(click_ctx, "multi_user"):
+        os.environ["MCP_MULTI_USER"] = str(multi_user).lower()
     if click_ctx and was_option_provided(click_ctx, "read_only"):
         os.environ["READ_ONLY_MODE"] = str(read_only).lower()
     if click_ctx and was_option_provided(click_ctx, "confluence_ssl_verify"):
