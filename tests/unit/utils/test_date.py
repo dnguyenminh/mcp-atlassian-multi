@@ -41,7 +41,10 @@ def test_parse_date_rfc3339():
     )
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="Windows doesn't support large timestamps")
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="Windows doesn't support large timestamps",
+)
 def test_parse_date_timestamp_boundary_max_valid() -> None:
     """Test that maximum valid timestamp (year 9999) is handled correctly.
 

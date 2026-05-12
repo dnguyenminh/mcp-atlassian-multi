@@ -167,7 +167,12 @@ class TestFetchAndEncodeAttachment:
             ("photo.jpeg", "image/jpeg"),
             ("photo.gif", "image/gif"),
             ("doc.pdf", "application/pdf"),
-            ("archive.zip", "application/zip" if sys.platform != "win32" else "application/x-zip-compressed"),
+            (
+                "archive.zip",
+                "application/zip"
+                if sys.platform != "win32"
+                else "application/x-zip-compressed",
+            ),
             ("unknown", "application/octet-stream"),
         ],
         ids=[
