@@ -145,13 +145,13 @@ _confluence_cache: TTLCache[str, ConfluenceFetcher] = TTLCache(maxsize=50, ttl=3
 ```python
 def _hash_credentials(creds: dict[str, str]) -> str:
     """Create deterministic hash of credentials for cache key.
-    
+
     Algorithm:
     1. Sort dict items by key (deterministic ordering)
     2. Join as "key=value" separated by "|"
     3. SHA-256 hash the UTF-8 encoded string
     4. Return first 16 hex characters
-    
+
     Why SHA-256 truncated to 16 chars:
     - Collision probability negligible for < 50 entries
     - Short enough for readable logs
@@ -164,7 +164,7 @@ def _hash_credentials(creds: dict[str, str]) -> str:
 ```python
 def resolve_jira_from_meta(meta: dict[str, Any] | None) -> JiraFetcher | None:
     """Resolve JiraFetcher from _meta credentials if present.
-    
+
     Decision tree:
     1. meta is None → return None
     2. meta has no "credentials" key → return None
@@ -207,14 +207,14 @@ from mcp_atlassian.servers.multi_user import resolve_jira_from_meta, resolve_con
 ```python
 def _extract_meta_from_context(ctx: Context) -> dict[str, Any] | None:
     """Extract _meta from the current tool call context.
-    
+
     Tries multiple access patterns because FastMCP's internal structure
     may vary between versions:
     1. ctx.request_context.meta (preferred)
     2. ctx._meta (fallback)
     3. ctx.request_context.params._meta (legacy)
     4. ctx.request_context.params["_meta"] (dict-style)
-    
+
     Returns None on any failure (never raises).
     """
 ```
@@ -226,7 +226,7 @@ The `_get_fetcher` function in `dependencies.py` already handles multiple auth b
 ```python
 async def _get_fetcher(ctx: Context, spec: _ServiceSpec) -> Any:
     # ... existing code ...
-    
+
     # NEW: Check _meta for multi-user credentials
     meta = _extract_meta_from_context(ctx)
     if meta:
@@ -236,7 +236,7 @@ async def _get_fetcher(ctx: Context, spec: _ServiceSpec) -> Any:
             fetcher = resolve_confluence_from_meta(meta)
         if fetcher:
             return fetcher
-    
+
     # ... existing auth branches continue ...
 ```
 

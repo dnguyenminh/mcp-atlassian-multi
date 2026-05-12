@@ -272,7 +272,7 @@ def resolve_jira_from_meta(meta: dict[str, Any] | None) -> JiraFetcher | None:
     """
     Input: _meta dict from MCP request context (or None)
     Output: JiraFetcher instance (or None if credentials not present/invalid)
-    
+
     Side effects:
     - May create new JiraFetcher and cache it
     - Logs at DEBUG/INFO/WARNING/ERROR levels
@@ -296,7 +296,7 @@ def _hash_credentials(creds: dict[str, str]) -> str:
     """
     Input: Dictionary of credential key-value pairs
     Output: 16-character hex string (SHA-256 prefix)
-    
+
     Properties:
     - Deterministic: same input → same output
     - Order-independent: sorted before hashing
