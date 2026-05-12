@@ -69,7 +69,9 @@ def resolve_jira_from_meta(meta: dict[str, Any] | None) -> JiraFetcher | None:
         return None
 
 
-def resolve_confluence_from_meta(meta: dict[str, Any] | None) -> ConfluenceFetcher | None:
+def resolve_confluence_from_meta(
+    meta: dict[str, Any] | None,
+) -> ConfluenceFetcher | None:
     """Resolve ConfluenceFetcher from _meta credentials if present."""
     if not meta:
         return None
@@ -103,8 +105,13 @@ def resolve_confluence_from_meta(meta: dict[str, Any] | None) -> ConfluenceFetch
             return None
         fetcher = ConfluenceFetcher(config=config)
         _confluence_cache[cache_key] = fetcher
-        logger.info("Created ConfluenceFetcher hash=%s url=%s", cache_key[:8], confluence_url)
+        logger.info(
+            "Created ConfluenceFetcher hash=%s url=%s",
+            cache_key[:8], confluence_url,
+        )
         return fetcher
     except Exception as e:
-        logger.error("Failed to create ConfluenceFetcher from _meta: %s", e)
+        logger.error(
+            "Failed to create ConfluenceFetcher from _meta: %s", e
+        )
         return None
