@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import dataclasses
 import logging
+import os
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
@@ -541,10 +542,22 @@ async def _get_fetcher(ctx: Context, spec: _ServiceSpec) -> Any:
         logger.debug(
             f"{fn_name}: _meta dict found: {list(meta.keys())}"
         )
+        # Get fallback URL from global config if available
+        app_ctx = _get_app_lifespan_ctx(ctx)
+        global_cfg = (
+            getattr(app_ctx, spec.config_attr, None)
+            if app_ctx
+            else None
+        )
+        fallback_url = global_cfg.url if global_cfg else os.getenv(
+            "JIRA_URL" if spec.name == "Jira" else "CONFLUENCE_URL"
+        )
         if spec.name == "Jira":
-            fetcher = resolve_jira_from_meta(meta)
+            fetcher = resolve_jira_from_meta(meta, fallback_url)
         else:
-            fetcher = resolve_confluence_from_meta(meta)
+            fetcher = resolve_confluence_from_meta(
+                meta, fallback_url
+            )
         if fetcher:
             logger.info(
                 f"{fn_name}: Resolved {spec.name}Fetcher from _meta"

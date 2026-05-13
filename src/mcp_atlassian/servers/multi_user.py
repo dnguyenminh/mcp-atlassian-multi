@@ -28,14 +28,17 @@ def _hash_credentials(creds: dict[str, str]) -> str:
     return hashlib.sha256(raw.encode()).hexdigest()[:16]
 
 
-def resolve_jira_from_meta(meta: dict[str, Any] | None) -> JiraFetcher | None:
+def resolve_jira_from_meta(
+    meta: dict[str, Any] | None,
+    fallback_url: str | None = None,
+) -> JiraFetcher | None:
     """Resolve JiraFetcher from _meta credentials if present."""
     if not meta:
         return None
     creds = meta.get("credentials")
     if not creds or not isinstance(creds, dict):
         return None
-    jira_url = creds.get("jira_url")
+    jira_url = creds.get("jira_url") or fallback_url
     if not jira_url:
         return None
     cache_key = _hash_credentials(creds)
@@ -76,6 +79,7 @@ def resolve_jira_from_meta(meta: dict[str, Any] | None) -> JiraFetcher | None:
 
 def resolve_confluence_from_meta(
     meta: dict[str, Any] | None,
+    fallback_url: str | None = None,
 ) -> ConfluenceFetcher | None:
     """Resolve ConfluenceFetcher from _meta credentials if present."""
     if not meta:
@@ -83,7 +87,7 @@ def resolve_confluence_from_meta(
     creds = meta.get("credentials")
     if not creds or not isinstance(creds, dict):
         return None
-    confluence_url = creds.get("confluence_url")
+    confluence_url = creds.get("confluence_url") or fallback_url
     if not confluence_url:
         return None
     cache_key = _hash_credentials(creds)
