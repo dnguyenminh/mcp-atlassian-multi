@@ -507,33 +507,47 @@ def _create_user_config_for_fetcher(
 def _extract_meta_from_context(ctx: Context) -> dict[str, Any] | None:
     """Extract _meta from the current tool call context.
 
-    MCP protocol stores _meta in request params as a Pydantic model
-    with extra="allow". We convert it to dict for downstream use.
+    RequestContext.meta is the direct path in MCP SDK.
+    Meta is a Pydantic model with extra="allow" — custom fields
+    like credentials are stored in model_extra.
     """
     try:
         req_ctx = ctx.request_context
         if not req_ctx:
             return None
 
-        # Path: request_context.request.params.meta (Pydantic model)
+        # Direct path: RequestContext.meta (Pydantic model)
+        meta_obj = getattr(req_ctx, "meta", None)
+        if meta_obj is not None:
+            if hasattr(meta_obj, "model_extra") and meta_obj.model_extra:
+                return dict(meta_obj.model_extra)
+            if hasattr(meta_obj, "model_dump"):
+                dumped = meta_obj.model_dump(exclude_none=True)
+                dumped.pop("progressToken", None)
+                if dumped:
+                    return dumped
+            if isinstance(meta_obj, dict):
+                return meta_obj
+
+        # Fallback: request.params.meta (older SDK versions)
         request = getattr(req_ctx, "request", None)
         if request and hasattr(request, "params"):
             params = request.params
-            meta_obj = getattr(params, "meta", None)
-            if meta_obj is not None:
-                # Meta is a Pydantic model with extra="allow"
-                # Extra fields (like credentials) are in model_extra
-                if hasattr(meta_obj, "model_extra") and meta_obj.model_extra:
-                    return dict(meta_obj.model_extra)
-                # Fallback: try model_dump excluding None
-                if hasattr(meta_obj, "model_dump"):
-                    dumped = meta_obj.model_dump(exclude_none=True)
-                    # Remove standard MCP fields
-                    dumped.pop("progressToken", None)
-                    if dumped:
-                        return dumped
+            params_meta = getattr(params, "meta", None)
+            if params_meta is not None:
+                if (
+                    hasattr(params_meta, "model_extra")
+                    and params_meta.model_extra
+                ):
+                    return dict(params_meta.model_extra)
+            # Check model_extra for _meta key
+            params_extra = getattr(params, "model_extra", None)
+            if params_extra and "_meta" in params_extra:
+                raw = params_extra["_meta"]
+                if isinstance(raw, dict):
+                    return raw
     except Exception as e:
-        logger.debug(f"Could not extract _meta from context: {e}")
+        logger.debug(f"Could not extract _meta: {e}")
     return None
 
 
