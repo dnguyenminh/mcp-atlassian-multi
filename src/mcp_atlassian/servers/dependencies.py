@@ -507,22 +507,31 @@ def _create_user_config_for_fetcher(
 def _extract_meta_from_context(ctx: Context) -> dict[str, Any] | None:
     """Extract _meta from the current tool call context.
 
-    FastMCP passes _meta through context when available.
+    MCP protocol stores _meta in request params as a Pydantic model
+    with extra="allow". We convert it to dict for downstream use.
     """
     try:
         req_ctx = ctx.request_context
-        if req_ctx and hasattr(req_ctx, "meta"):
-            return req_ctx.meta
-        # Try accessing from params if available
-        if hasattr(ctx, "_meta"):
-            return ctx._meta
-        # Try from request context params
-        if req_ctx and hasattr(req_ctx, "params"):
-            params = req_ctx.params
-            if hasattr(params, "_meta"):
-                return params._meta
-            if isinstance(params, dict):
-                return params.get("_meta")
+        if not req_ctx:
+            return None
+
+        # Path: request_context.request.params.meta (Pydantic model)
+        request = getattr(req_ctx, "request", None)
+        if request and hasattr(request, "params"):
+            params = request.params
+            meta_obj = getattr(params, "meta", None)
+            if meta_obj is not None:
+                # Meta is a Pydantic model with extra="allow"
+                # Extra fields (like credentials) are in model_extra
+                if hasattr(meta_obj, "model_extra") and meta_obj.model_extra:
+                    return dict(meta_obj.model_extra)
+                # Fallback: try model_dump excluding None
+                if hasattr(meta_obj, "model_dump"):
+                    dumped = meta_obj.model_dump(exclude_none=True)
+                    # Remove standard MCP fields
+                    dumped.pop("progressToken", None)
+                    if dumped:
+                        return dumped
     except Exception as e:
         logger.debug(f"Could not extract _meta from context: {e}")
     return None
