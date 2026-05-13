@@ -17,6 +17,10 @@ from starlette.requests import Request
 from mcp_atlassian.confluence import ConfluenceConfig, ConfluenceFetcher
 from mcp_atlassian.jira import JiraConfig, JiraFetcher
 from mcp_atlassian.servers.context import MainAppContext
+from mcp_atlassian.servers.multi_user import (
+    resolve_confluence_from_meta,
+    resolve_jira_from_meta,
+)
 from mcp_atlassian.utils.oauth import OAuthConfig
 from mcp_atlassian.utils.urls import validate_url_for_ssrf
 
@@ -530,6 +534,23 @@ async def _get_fetcher(ctx: Context, spec: _ServiceSpec) -> Any:
     """
     fn_name = f"get_{spec.name.lower()}_fetcher"
     logger.debug(f"{fn_name}: ENTERED. Context ID: {id(ctx)}")
+
+    # --- Branch 0: multi-user mode via _meta credentials ---
+    meta = _extract_meta_from_context(ctx)
+    if meta and isinstance(meta, dict):
+        logger.debug(
+            f"{fn_name}: _meta dict found: {list(meta.keys())}"
+        )
+        if spec.name == "Jira":
+            fetcher = resolve_jira_from_meta(meta)
+        else:
+            fetcher = resolve_confluence_from_meta(meta)
+        if fetcher:
+            logger.info(
+                f"{fn_name}: Resolved {spec.name}Fetcher from _meta"
+            )
+            return fetcher
+
     try:
         request: Request = get_http_request()
         logger.debug(
